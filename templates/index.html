@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}TwoBin{% endblock %}</title>
+    <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon"> -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+{% block nav %}
+<!-- 灰底黑字 -->
+<nav class="navbar navbar-expand-sm navbar-expand-md navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/"><i class="fa fa-home"></i> TwoBin</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row" style="padding: 40px;">
+    <div class="col-md-6">
+        <form>
+            <div class="form-group">
+                <label for="name">发送数据</label>
+                <textarea class="form-control" style="height: 400px;width: 100%;" id="send_data" name="send_data"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" id="submit" onclick="send();">发送</button>
+            <button type="button" class="btn btn-primary float-right" onclick="clear_send();">清空</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <form>
+            <div class="form-group">
+                <label for="name">接收数据</label>
+                <textarea class="form-control" style="height: 400px;width: 100%;" id="recv_data" name="recv_data"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary float-right" onclick="clear_recv();">清空</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="/static/jquery-3.2.1.min.js"></script>
+<!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+<script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+<!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script>
+    function clear_recv() {
+        $('#recv_data').val('');
+    }
+
+    function clear_send() {
+        $('#send_data').val('');
+    }
+
+    function send(){
+        var data = $('#send_data').val();
+        $.ajax({
+            url: '/send',
+            type: 'post',
+            dataType: 'json',
+            data: {data: data},
+            success: function(resp){
+                console.log(resp);
+                alert('发送成功');
+            },
+            error: function(){
+                alert('Server Error!')
+            }
+        })
+    }
+        
+</script>
+{% endblock %}
+</body>
+</html>
+ 

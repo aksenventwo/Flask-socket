@@ -21,7 +21,7 @@
 
 {% block content %}
 <div class="row" style="padding: 40px;">
-    <div class="col-md-6">
+    <div class="col-md-6" style="padding: 40px;">
         <form>
             <div class="form-group">
                 <label for="name">发送数据</label>
@@ -31,15 +31,25 @@
             <button type="button" class="btn btn-primary float-right" onclick="clear_send();">清空</button>
         </form>
     </div>
-    <div class="col-md-6">
-        <form>
+    <div class="col-md-6" style="padding-top: 40px;">
+        <!-- <form>
             <div class="form-group">
                 <label for="name">接收数据</label>
                 <textarea class="form-control" style="height: 400px;width: 100%;" id="recv_data" name="recv_data"></textarea>
             </div>
             <button type="button" class="btn btn-primary float-right" onclick="clear_recv();">清空</button>
-        </form>
+        </form> -->
+        <div class="card">
+            <div class="card-header">接收数据</div>
+            <div class="col-md-12 card-body" style="height: 380px;width: 100%; overflow-y: auto; background-color: #1b1e21;" id="recv_data">
+            </div>
+        </div>
+        <div style="padding-top: 5px;">
+            <button type="button" class="btn btn-primary float-right" onclick="clear_recv();">清空</button>
+        </div>
+        
     </div>
+
 </div>
 {% endblock %}
 
@@ -49,9 +59,24 @@
 <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
 <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="/static/socket.io.js"></script>
 <script>
+    var socket;
+    $(document).ready(function(){
+        socket = io.connect();
+        socket.on('connected', function() {
+            socket.emit('connect', {});
+        });
+        
+        socket.on('message', function(data) {
+            $('#recv_data').append('<p style="color: #27ce27d6;">[TwoBin@ ~]: ' + data['msg'] + '</p>');
+            $('#recv_data').scrollTop($('#recv_data')[0].scrollHeight - $('#recv_data')[0].clientHeight);
+        });
+    });
+    
+    
     function clear_recv() {
-        $('#recv_data').val('');
+        $('#recv_data').empty();
     }
 
     function clear_send() {
@@ -67,7 +92,7 @@
             data: {data: data},
             success: function(resp){
                 console.log(resp);
-                alert('发送成功');
+                //alert('发送成功');
             },
             error: function(){
                 alert('Server Error!')

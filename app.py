@@ -16,12 +16,9 @@ def index():
 @app.route('/send', methods=['POST'])
 def send():
 	data = request.form.get('data')
-	recv_data()
-	#socketio.emit('message', {'msg': data})
+	socketio.emit('message', {'msg': data})
 	return jsonify({'data': data})
 
-def recv_data():
-	socketio.emit('message', {'msg': 'hello world'})
 
 
 if __name__ == '__main__':

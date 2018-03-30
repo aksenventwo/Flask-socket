@@ -14,14 +14,20 @@ def recv():
 
     while True:
         conn, addr = s.accept()
-        print('Connected by ', addr)
-
+        connect = 'Connected by %s:%s' % (addr[0], addr[1])
+        print(connect)
+        post(connect)
         while True:
-            data = conn.recv(1024)
-            post(data)
-            conn.send("server received you message.".encode('utf8'))
-
-    # conn.close()
+            try:
+                data = conn.recv(1024)
+                if data:
+                    post(data)
+                    print(data, type(data))
+                conn.send("server received you message.".encode('utf8'))
+            except Exception as e:
+                post('%s:%s disconnect' % (addr[0], addr[1]))
+                break
+        #conn.close()
 
 def post(message):
     post_data = {

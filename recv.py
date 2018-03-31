@@ -26,7 +26,7 @@ def recv():
                     if data:
                         post(binascii.b2a_hex(data), ip_port)
                         print(binascii.b2a_hex(data))
-                    conn.send("server received you message.".encode('utf8'))
+                    conn.send(binascii.b2a_hex(data))
                 except Exception as e:
                     print(e)
                     #post('%s:%s disconnect' % (addr[0], addr[1]))

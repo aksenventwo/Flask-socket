@@ -24,10 +24,10 @@
     <div class="col-md-6" style="padding: 40px;">
         <form class="form-inline">
             <div class="form-group">
-                <input type="text" name="ip" class="form-control" placeholder="IP" id="ip">
+                <input type="text" name="ip" class="form-control" value="127.0.0.1" id="ip">
             </div>
             <div class="form-group" style="padding-left: 10px;">
-                <input type="text" name="port" class="form-control" placeholder="Port" id="port">
+                <input type="text" name="port" class="form-control" value="8001" id="port">
             </div>
             <div class="form-group" style="padding-left: 10px;">
                 <button type="button" class="btn btn-primary" onclick="Connect();" id="connect">Connect</button>
@@ -42,7 +42,7 @@
         </form>
     </div>
     <div class="col-md-6" style="padding-top: 85px;">
-        <div class="col-md-12 card-body" style="height: 380px;width: 100%; overflow-y: auto; background-color: #1b1e21;" id="recv_data">
+        <div class="col-md-12 card-body" style="height: 380px;width: 100%; overflow-y: auto; background-color: rgba(4, 4, 6, 0.53); color: #27ce27d6;" id="recv_data">
         </div>
         <div style="padding-top: 15px;">
             <button type="button" class="btn btn-primary float-right" onclick="clear_recv();">清空</button>
@@ -69,7 +69,7 @@
         });
 
         socket.on('message', function(data) {
-            $('#recv_data').append('<p style="color: #27ce27d6;">[TwoBin@ ~]: ' + data['msg'] + '</p>');
+            $('#recv_data').append('<p style="color: #27ce27d6;">['+data['connect'] +']: ' + data['msg'] + '</p>');
             $('#recv_data').scrollTop($('#recv_data')[0].scrollHeight - $('#recv_data')[0].clientHeight);
         });
     });
@@ -93,11 +93,14 @@
             dataType: 'json',
             data: {data: data, ip: ip, port: port},
             success: function(resp){
-                console.log(resp);
-                //alert('发送成功');
+                if (resp.success) {
+                    console.log(resp);
+                } else {
+                    alert(resp.err_msg);
+                }
             },
             error: function(){
-                alert('Server Error!')
+                alert('Server Error!');
             }
         })
     }

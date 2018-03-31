@@ -22,7 +22,6 @@ def connect():
         return jsonify({'success': False, "err_msg": "Ip or Port can't be empty."})
     try:
         recv = sc_connect(ip, port)
-        #socketio.emit('message', {'msg': recv})
     except Exception as e:
         return jsonify({'success': False, "err_msg": str(e)})
     return jsonify({'success': True})
@@ -33,14 +32,17 @@ def send():
     data = request.form.get('data')
     ip = request.form.get('ip')
     port = request.form.get('port')
-    recv = sc_connect(ip, port, data)
-    #socketio.emit('message', {'msg': recv})
-    return jsonify({'data': data})
+    try:
+        recv = sc_connect(ip, port, data)
+    except Exception as e:
+        return jsonify({'success': False, 'err_msg': str(e)})
+    return jsonify({'success': True,'data': recv})
 
 @app.route('/recv', methods=['POST'])
 def recv():
     data = request.form.get('data')
-    socketio.emit('message', {'msg': data})
+    ip_port = request.form.get('connect')
+    socketio.emit('message', {'msg': data, 'connect': ip_port})
     return jsonify({'data': data})
 
 def sc_connect(ip, port, data="Hello World"):
@@ -48,7 +50,7 @@ def sc_connect(ip, port, data="Hello World"):
     try:
         server.connect((ip, int(port)))
     except socket.error as e:
-        raise TcpConnectError(e)
+        raise e
     else:
         server.send(data)
         accept_data = server.recv(1024)

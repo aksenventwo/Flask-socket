@@ -1,5 +1,7 @@
 import socket
 import requests
+import binascii
+
 
 def recv():
     HOST = '127.0.0.1'
@@ -16,14 +18,14 @@ def recv():
         try:
             conn, addr = s.accept()
             connect = 'Connected by %s:%s' % (addr[0], addr[1])
+            ip_port = '%s:%s' % (addr[0], addr[1])
             print(connect)
-            post(connect)
             while True:
                 try:
                     data = conn.recv(1024)
                     if data:
-                        post(data)
-                        print(data, type(data))
+                        post(binascii.b2a_hex(data), ip_port)
+                        print(binascii.b2a_hex(data))
                     conn.send("server received you message.".encode('utf8'))
                 except Exception as e:
                     print(e)
@@ -35,9 +37,10 @@ def recv():
         finally:
             conn.close()
 
-def post(message):
+def post(message, connect):
     post_data = {
-        'data': message
+        'data': message,
+        'connect': connect
     }
     requests.post('http://127.0.0.1:5000/recv', data=post_data)
 

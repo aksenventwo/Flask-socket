@@ -22,32 +22,32 @@
 {% block content %}
 <div class="row" style="padding: 40px;">
     <div class="col-md-6" style="padding: 40px;">
-        <form>
+        <form class="form-inline">
             <div class="form-group">
-                <label for="name">发送数据</label>
-                <textarea class="form-control" style="height: 400px;width: 100%;" id="send_data" name="send_data"></textarea>
+                <input type="text" name="ip" class="form-control" placeholder="IP" id="ip">
+            </div>
+            <div class="form-group" style="padding-left: 10px;">
+                <input type="text" name="port" class="form-control" placeholder="Port" id="port">
+            </div>
+            <div class="form-group" style="padding-left: 10px;">
+                <button type="button" class="btn btn-primary" onclick="Connect();" id="connect">Connect</button>
+            </div>
+        </form>
+        <form style="padding-top: 10px;">
+            <div class="form-group">
+                <textarea class="form-control" style="height: 380px;width: 100%;" id="send_data" name="send_data"></textarea>
             </div>
             <button type="button" class="btn btn-primary" id="submit" onclick="send();">发送</button>
             <button type="button" class="btn btn-primary float-right" onclick="clear_send();">清空</button>
         </form>
     </div>
-    <div class="col-md-6" style="padding-top: 40px;">
-        <!-- <form>
-            <div class="form-group">
-                <label for="name">接收数据</label>
-                <textarea class="form-control" style="height: 400px;width: 100%;" id="recv_data" name="recv_data"></textarea>
-            </div>
-            <button type="button" class="btn btn-primary float-right" onclick="clear_recv();">清空</button>
-        </form> -->
-        <div class="card">
-            <div class="card-header">接收数据</div>
-            <div class="col-md-12 card-body" style="height: 380px;width: 100%; overflow-y: auto; background-color: #1b1e21;" id="recv_data">
-            </div>
+    <div class="col-md-6" style="padding-top: 85px;">
+        <div class="col-md-12 card-body" style="height: 380px;width: 100%; overflow-y: auto; background-color: #1b1e21;" id="recv_data">
         </div>
-        <div style="padding-top: 5px;">
+        <div style="padding-top: 15px;">
             <button type="button" class="btn btn-primary float-right" onclick="clear_recv();">清空</button>
         </div>
-        
+
     </div>
 
 </div>
@@ -67,14 +67,14 @@
         socket.on('connected', function() {
             socket.emit('connect', {});
         });
-        
+
         socket.on('message', function(data) {
             $('#recv_data').append('<p style="color: #27ce27d6;">[TwoBin@ ~]: ' + data['msg'] + '</p>');
             $('#recv_data').scrollTop($('#recv_data')[0].scrollHeight - $('#recv_data')[0].clientHeight);
         });
     });
-    
-    
+
+
     function clear_recv() {
         $('#recv_data').empty();
     }
@@ -84,12 +84,14 @@
     }
 
     function send(){
+        var ip = $('#ip').val();
+        var port = $('#port').val();
         var data = $('#send_data').val();
         $.ajax({
             url: '/send',
             type: 'post',
             dataType: 'json',
-            data: {data: data},
+            data: {data: data, ip: ip, port: port},
             success: function(resp){
                 console.log(resp);
                 //alert('发送成功');
@@ -99,9 +101,53 @@
             }
         })
     }
-        
+
+    function Connect(){
+        var ip = $('#ip').val();
+        var port = $('#port').val();
+        if ($('#connect').text() === 'Connect') {
+            $.ajax({
+                url: '/connect',
+                type: 'post',
+                dataType: 'json',
+                data: {ip: ip, port: port},
+                success: function(resp){
+                    if (resp.success) {
+                        $('#connect').text('Disconnect');
+                        $('#ip').prop('disabled', true);
+                        $('#port').prop('disabled', true);
+
+                    }else{
+                        alert(resp.err_msg);
+                    }
+                }
+            });
+        }else{
+            $('#connect').text('Connect');
+            $('#ip').prop('disabled', false);
+            $('#port').prop('disabled', false);
+/*            $.ajax({
+                url: '/disconnect',
+                type: 'post',
+                dataType: 'json',
+                data: {ip: ip, port: port},
+                success: function(resp){
+                    if (resp.success) {
+                        $('#connect').text('Connect');
+                        $('#ip').prop('disabled', false);
+                        $('#port').prop('disabled', false);
+
+
+                    }
+                }
+            });
+*/        }
+
+
+    }
+
 </script>
 {% endblock %}
 </body>
 </html>
- 
+

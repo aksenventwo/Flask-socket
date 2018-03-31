@@ -13,28 +13,34 @@ def recv():
     print('wait for connection...')
 
     while True:
-        conn, addr = s.accept()
-        connect = 'Connected by %s:%s' % (addr[0], addr[1])
-        print(connect)
-        post(connect)
-        while True:
-            try:
-                data = conn.recv(1024)
-                if data:
-                    post(data)
-                    print(data, type(data))
-                conn.send("server received you message.".encode('utf8'))
-            except Exception as e:
-                post('%s:%s disconnect' % (addr[0], addr[1]))
-                break
-        #conn.close()
+        try:
+            conn, addr = s.accept()
+            connect = 'Connected by %s:%s' % (addr[0], addr[1])
+            print(connect)
+            post(connect)
+            while True:
+                try:
+                    data = conn.recv(1024)
+                    if data:
+                        post(data)
+                        print(data, type(data))
+                    conn.send("server received you message.".encode('utf8'))
+                except Exception as e:
+                    print(e)
+                    #post('%s:%s disconnect' % (addr[0], addr[1]))
+                    break
+        except Exception as e:
+            print(e)
+            #post('%s:%s disconnect' % (addr[0], addr[1]))
+        finally:
+            conn.close()
 
 def post(message):
     post_data = {
         'data': message
     }
-    requests.post('http://127.0.0.1:5000/send', data=post_data)
+    requests.post('http://127.0.0.1:5000/recv', data=post_data)
 
 if __name__ == '__main__':
     recv()
-    
+
